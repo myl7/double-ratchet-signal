@@ -29,7 +29,8 @@ use alloc::vec::Vec;
 
 use clear_on_drop::clear::Clear;
 use core::convert::TryInto;
-use double_ratchet as dr;
+#[allow(unused_imports)]
+use double_ratchet::{self as dr, KeyPair as _};
 use generic_array::typenum::U32;
 use generic_array::GenericArray;
 use hkdf::Hkdf;
@@ -169,6 +170,12 @@ impl AsRef<[u8]> for PublicKey {
     }
 }
 
+impl From<[u8; 32]> for PublicKey {
+    fn from(b: [u8; 32]) -> Self {
+        Self(x25519_dalek::PublicKey::from(b))
+    }
+}
+
 pub struct KeyPair {
     private: x25519_dalek::StaticSecret,
     public: PublicKey,
@@ -209,6 +216,14 @@ impl dr::KeyPair for KeyPair {
     }
 }
 
+impl From<[u8; 32]> for KeyPair {
+    fn from(b: [u8; 32]) -> Self {
+        let private = x25519_dalek::StaticSecret::from(b);
+        let public = PublicKey::from(&private);
+        KeyPair { private, public }
+    }
+}
+
 #[derive(Default)]
 pub struct SymmetricKey(GenericArray<u8, U32>);
 
@@ -227,6 +242,12 @@ impl fmt::Debug for SymmetricKey {
 impl Drop for SymmetricKey {
     fn drop(&mut self) {
         self.0.clear();
+    }
+}
+
+impl From<[u8; 32]> for SymmetricKey {
+    fn from(b: [u8; 32]) -> Self {
+        Self(GenericArray::<u8, U32>::from(b))
     }
 }
 
