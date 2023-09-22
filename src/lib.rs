@@ -11,6 +11,4 @@ extern crate alloc;
 #[cfg(feature = "std")]
 extern crate std;
 
-mod dr;
-
-pub use dr::*;
+pub mod signal;

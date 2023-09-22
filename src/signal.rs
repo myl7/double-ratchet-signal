@@ -25,11 +25,13 @@
 //! [`clear_on_drop`]: https://crates.io/crates/clear_on_drop
 //! [specification]: https://signal.org/docs/specifications/doubleratchet/#recommended-cryptographic-algorithms
 
-use aes::{block_cipher_trait::BlockCipher, Aes256};
+use aes::Aes256;
+use alloc::vec::Vec;
 use block_modes::{block_padding::Pkcs7, BlockMode, Cbc};
 use clear_on_drop::clear::Clear;
 use double_ratchet::{self as dr, KeyPair as _};
-use generic_array::{typenum::U32, GenericArray};
+use generic_array::typenum::{U16, U32};
+use generic_array::GenericArray;
 use hkdf::Hkdf;
 use hmac::{Hmac, Mac};
 use rand_core::{CryptoRng, RngCore};
@@ -85,11 +87,11 @@ impl dr::CryptoProvider for SignalCryptoProvider {
         let info = b"WhisperMessageKeys";
         let mut okm = [0; 80];
         prk.expand(info, &mut okm).unwrap();
-        let ek = GenericArray::<u8, <Aes256 as BlockCipher>::KeySize>::from_slice(&okm[..32]);
+        let ek = GenericArray::<u8, U32>::from_slice(&okm[..32]);
         let mk = GenericArray::<u8, <Hmac<Sha256> as Mac>::OutputSize>::from_slice(&okm[32..64]);
-        let iv = GenericArray::<u8, <Aes256 as BlockCipher>::BlockSize>::from_slice(&okm[64..]);
+        let iv = GenericArray::<u8, U16>::from_slice(&okm[64..]);
 
-        let cipher = Cbc::<Aes256, Pkcs7>::new_fix(ek, iv);
+        let cipher = Cbc::<_, Pkcs7>::new_fix(ek, iv);
         let mut ct = cipher.encrypt_vec(pt);
 
         let mut mac = Hmac::<Sha256>::new_varkey(mk).unwrap();
@@ -108,9 +110,9 @@ impl dr::CryptoProvider for SignalCryptoProvider {
         let info = b"WhisperMessageKeys";
         let mut okm = [0; 80];
         prk.expand(info, &mut okm).unwrap();
-        let dk = GenericArray::<u8, <Aes256 as BlockCipher>::KeySize>::from_slice(&okm[..32]);
+        let dk = GenericArray::<u8, U32>::from_slice(&okm[..32]);
         let mk = GenericArray::<u8, <Hmac<Sha256> as Mac>::OutputSize>::from_slice(&okm[32..64]);
-        let iv = GenericArray::<u8, <Aes256 as BlockCipher>::BlockSize>::from_slice(&okm[64..]);
+        let iv = GenericArray::<u8, U16>::from_slice(&okm[64..]);
 
         let ct_len = ct.len() - 8;
         let mut mac = Hmac::<Sha256>::new_varkey(mk).unwrap();
