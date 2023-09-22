@@ -1,0 +1,11 @@
+[package]
+name = "cbc-aes256-pkcs7-compact"
+version = "0.1.0"
+edition = "2021"
+authors = ["myl7 <myl@myl.moe>"]
+license = "BSD-3-Clause"
+repository = "https://github.com/myl7/double-ratchet-signal"
+
+[dependencies]
+aes = "0.8.3"
+cbc = { version = "0.1.2", features = ["alloc"] }

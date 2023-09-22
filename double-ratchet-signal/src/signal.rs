@@ -25,22 +25,25 @@
 //! [`clear_on_drop`]: https://crates.io/crates/clear_on_drop
 //! [specification]: https://signal.org/docs/specifications/doubleratchet/#recommended-cryptographic-algorithms
 
-use aes::Aes256;
 use alloc::vec::Vec;
-use block_modes::{block_padding::Pkcs7, BlockMode, Cbc};
+
 use clear_on_drop::clear::Clear;
-use double_ratchet::{self as dr, KeyPair as _};
-use generic_array::typenum::{U16, U32};
+use core::convert::TryInto;
+use double_ratchet as dr;
+use generic_array::typenum::U32;
 use generic_array::GenericArray;
 use hkdf::Hkdf;
 use hmac::{Hmac, Mac};
 use rand_core::{CryptoRng, RngCore};
-use rand_os::OsRng;
+// Do not why cargo complains unused imports...
+// use rand_os::OsRng;
 use sha2::Sha256;
 use std::fmt;
 use std::hash::{Hash, Hasher};
 use subtle::ConstantTimeEq;
 use x25519_dalek::{self, SharedSecret};
+
+use cbc_aes256_pkcs7_compact::{decrypt, encrypt};
 
 pub type SignalDR = dr::DoubleRatchet<SignalCryptoProvider>;
 
@@ -87,12 +90,11 @@ impl dr::CryptoProvider for SignalCryptoProvider {
         let info = b"WhisperMessageKeys";
         let mut okm = [0; 80];
         prk.expand(info, &mut okm).unwrap();
-        let ek = GenericArray::<u8, U32>::from_slice(&okm[..32]);
+        let ek = &okm[..32];
         let mk = GenericArray::<u8, <Hmac<Sha256> as Mac>::OutputSize>::from_slice(&okm[32..64]);
-        let iv = GenericArray::<u8, U16>::from_slice(&okm[64..]);
+        let iv = &okm[64..];
 
-        let cipher = Cbc::<_, Pkcs7>::new_fix(ek, iv);
-        let mut ct = cipher.encrypt_vec(pt);
+        let mut ct = encrypt(pt, ek.try_into().unwrap(), iv.try_into().unwrap());
 
         let mut mac = Hmac::<Sha256>::new_varkey(mk).unwrap();
         mac.input(ad);
@@ -110,9 +112,9 @@ impl dr::CryptoProvider for SignalCryptoProvider {
         let info = b"WhisperMessageKeys";
         let mut okm = [0; 80];
         prk.expand(info, &mut okm).unwrap();
-        let dk = GenericArray::<u8, U32>::from_slice(&okm[..32]);
+        let dk = &okm[..32];
         let mk = GenericArray::<u8, <Hmac<Sha256> as Mac>::OutputSize>::from_slice(&okm[32..64]);
-        let iv = GenericArray::<u8, U16>::from_slice(&okm[64..]);
+        let iv = &okm[64..];
 
         let ct_len = ct.len() - 8;
         let mut mac = Hmac::<Sha256>::new_varkey(mk).unwrap();
@@ -124,8 +126,11 @@ impl dr::CryptoProvider for SignalCryptoProvider {
             return Err(dr::DecryptError::DecryptFailure);
         }
 
-        let cipher = Cbc::<Aes256, Pkcs7>::new_fix(dk, iv);
-        if let Ok(pt) = cipher.decrypt_vec(&ct[..ct_len]) {
+        if let Ok(pt) = decrypt(
+            &ct[..ct_len],
+            dk.try_into().unwrap(),
+            iv.try_into().unwrap(),
+        ) {
             okm.clear();
             Ok(pt)
         } else {
@@ -227,7 +232,7 @@ impl Drop for SymmetricKey {
 
 #[test]
 fn signal_session() {
-    let mut rng = OsRng::new().unwrap();
+    let mut rng = rand_os::OsRng::new().unwrap();
     let (ad_a, ad_b) = (b"A2B:SessionID=42", b"B2A:SessionID=42");
 
     // Copy some values (these are usually the outcome of an X3DH key exchange)

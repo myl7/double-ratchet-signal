@@ -5,7 +5,7 @@
 
 #![no_std]
 #![warn(clippy::pedantic)]
-#![warn(missing_docs)]
+// #![warn(missing_docs)]
 
 extern crate alloc;
 #[cfg(feature = "std")]

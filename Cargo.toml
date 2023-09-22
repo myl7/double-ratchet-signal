@@ -1,2 +1,2 @@
 [workspace]
-members = ["double-ratchet-signal"]
+members = ["double-ratchet-signal", "cbc-aes256-pkcs7-compact"]
