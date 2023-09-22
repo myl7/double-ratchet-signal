@@ -1,0 +1,29 @@
+[package]
+name = "double-ratchet-signal"
+version = "0.1.0"
+authors = ["S.R. Verschoor <sebastian@zeroknowledge.me>", "myl7 <myl@myl.moe>"]
+edition = "2018"
+description = "Reexport the Signal provider of double-ratchet: Double Ratchet key management for exchanging encrypted messages between two parties."
+repository = "https://github.com/sebastianv89/double-ratchet"
+readme = "README.md"
+keywords = ["double-ratchet", "forward-secrecy", "future-secrecy"]
+categories = ["cryptography", "no-std"]
+license = "BSD-3-Clause"
+
+[dependencies]
+rand_core = "0.4"
+aes = "0.6"
+block-modes = "0.4"
+clear_on_drop = "0.2"
+generic-array = "0.12"
+hkdf = "0.7"
+hmac = "0.7"
+rand_os = "0.1"
+sha2 = "0.8"
+subtle = "2"
+x25519-dalek = "0.5"
+double-ratchet = "0.1.0"
+
+[features]
+default = ["std"]
+std = []
