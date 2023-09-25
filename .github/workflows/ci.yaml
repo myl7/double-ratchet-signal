@@ -1,0 +1,22 @@
+name: CI
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Test
+        run: cargo test
+      - name: Test without std
+        run: cargo test --no-default-features
+      - run: cargo fmt --check
+      # We do not run clippy because if with that the original code would produce too much warnings
+      # - run: cargo clippy --all-features -- --no-deps -Dwarnings
