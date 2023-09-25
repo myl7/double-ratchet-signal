@@ -1,7 +1,9 @@
 //! Crate documentation provided in README.md
 
 // TODO: include README.md documentation: https://github.com/rust-lang/rust/issues/44732
+// FIXED(myl7): Currently no need for an extra `doc` folder
 // TODO: test examples in README.md
+// FIXED(myl7): A test is available in the `signal.rs`
 
 #![no_std]
 #![warn(clippy::pedantic)]
