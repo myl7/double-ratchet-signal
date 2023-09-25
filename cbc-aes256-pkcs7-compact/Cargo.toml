@@ -6,6 +6,10 @@ authors = ["myl7 <myl@myl.moe>"]
 license = "BSD-3-Clause"
 repository = "https://github.com/myl7/double-ratchet-signal"
 
+[features]
+default = ["std"]
+std = []
+
 [dependencies]
 aes = "0.8.3"
 cbc = { version = "0.1.2", features = ["alloc"] }

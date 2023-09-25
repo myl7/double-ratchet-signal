@@ -27,4 +27,4 @@ cbc-aes256-pkcs7-compact = { path = "../cbc-aes256-pkcs7-compact" }
 
 [features]
 default = ["std"]
-std = []
+std = ["cbc-aes256-pkcs7-compact/std"]

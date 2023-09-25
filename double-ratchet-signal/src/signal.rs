@@ -38,9 +38,9 @@ use hmac::{Hmac, Mac};
 use rand_core::{CryptoRng, RngCore};
 // Do not why cargo complains unused imports...
 // use rand_os::OsRng;
+use core::fmt;
+use core::hash::{Hash, Hasher};
 use sha2::Sha256;
-use std::fmt;
-use std::hash::{Hash, Hasher};
 use subtle::ConstantTimeEq;
 use x25519_dalek::{self, SharedSecret};
 
