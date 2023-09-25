@@ -1,6 +1,6 @@
 [package]
 name = "double-ratchet-signal"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["S.R. Verschoor <sebastian@zeroknowledge.me>", "myl7 <myl@myl.moe>"]
 edition = "2018"
 description = "Reexport the Signal provider of double-ratchet: Double Ratchet key management for exchanging encrypted messages between two parties."
@@ -23,7 +23,7 @@ sha2 = "0.8"
 subtle = "2"
 x25519-dalek = "0.5"
 double-ratchet = "0.1.0"
-cbc-aes256-pkcs7-compact = { path = "../cbc-aes256-pkcs7-compact" }
+cbc-aes256-pkcs7-compact = { path = "../cbc-aes256-pkcs7-compact", version = "0.1.1" }
 
 [features]
 default = ["std"]
