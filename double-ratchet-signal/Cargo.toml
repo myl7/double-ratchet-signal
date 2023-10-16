@@ -1,6 +1,6 @@
 [package]
 name = "double-ratchet-signal"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["S.R. Verschoor <sebastian@zeroknowledge.me>", "myl7 <myl@myl.moe>"]
 edition = "2018"
 description = "Reexport the Signal provider of double-ratchet: Double Ratchet key management for exchanging encrypted messages between two parties."

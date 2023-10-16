@@ -28,7 +28,7 @@
 use alloc::vec::Vec;
 
 use clear_on_drop::clear::Clear;
-use core::convert::TryInto;
+use core::convert::{Infallible, TryFrom, TryInto};
 #[allow(unused_imports)]
 use double_ratchet::{self as dr, KeyPair as _};
 use generic_array::typenum::U32;
@@ -176,6 +176,15 @@ impl From<[u8; 32]> for PublicKey {
     }
 }
 
+impl TryFrom<PublicKey> for [u8; 32] {
+    type Error = Infallible;
+
+    fn try_from(pk: PublicKey) -> Result<Self, Self::Error> {
+        pk.0.as_bytes().clone().try_into()
+    }
+}
+
+#[derive(Clone)]
 pub struct KeyPair {
     private: x25519_dalek::StaticSecret,
     public: PublicKey,
@@ -224,7 +233,15 @@ impl From<[u8; 32]> for KeyPair {
     }
 }
 
-#[derive(Default)]
+impl TryFrom<KeyPair> for [u8; 32] {
+    type Error = Infallible;
+
+    fn try_from(kp: KeyPair) -> Result<Self, Self::Error> {
+        kp.private.to_bytes().try_into()
+    }
+}
+
+#[derive(Default, Clone)]
 pub struct SymmetricKey(GenericArray<u8, U32>);
 
 impl fmt::Debug for SymmetricKey {
@@ -248,6 +265,17 @@ impl Drop for SymmetricKey {
 impl From<[u8; 32]> for SymmetricKey {
     fn from(b: [u8; 32]) -> Self {
         Self(GenericArray::<u8, U32>::from(b))
+    }
+}
+
+impl TryFrom<SymmetricKey> for [u8; 32] {
+    type Error = Infallible;
+
+    fn try_from(sk: SymmetricKey) -> Result<Self, Self::Error> {
+        sk.0.as_slice()
+            .clone()
+            .try_into()
+            .map_err(|_| unreachable!())
     }
 }
 
