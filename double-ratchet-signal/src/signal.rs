@@ -25,6 +25,7 @@
 //! [`clear_on_drop`]: https://crates.io/crates/clear_on_drop
 //! [specification]: https://signal.org/docs/specifications/doubleratchet/#recommended-cryptographic-algorithms
 
+use alloc::borrow::ToOwned;
 use alloc::vec::Vec;
 
 use clear_on_drop::clear::Clear;
@@ -273,7 +274,7 @@ impl TryFrom<SymmetricKey> for [u8; 32] {
 
     fn try_from(sk: SymmetricKey) -> Result<Self, Self::Error> {
         sk.0.as_slice()
-            .clone()
+            .to_owned()
             .try_into()
             .map_err(|_| unreachable!())
     }

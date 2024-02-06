@@ -1,2 +1,3 @@
 [workspace]
+resolver = "2"
 members = ["double-ratchet-signal", "cbc-aes256-pkcs7-compact"]
