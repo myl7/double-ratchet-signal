@@ -18,5 +18,4 @@ jobs:
       - name: Test without std
         run: cargo test --no-default-features
       - run: cargo fmt --check
-      # We do not run clippy because if with that the original code would produce too much warnings
-      # - run: cargo clippy --all-features -- --no-deps -Dwarnings
+      - run: cargo clippy --all-features -- --no-deps -Dwarnings

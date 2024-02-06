@@ -6,7 +6,8 @@
 // FIXED(myl7): A test is available in the `signal.rs`
 
 #![no_std]
-#![warn(clippy::pedantic)]
+// Because it would report errors like too similar variable names, which is hard to fix without largely update the code
+// #![warn(clippy::pedantic)]
 // #![warn(missing_docs)]
 
 extern crate alloc;

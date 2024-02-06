@@ -69,7 +69,7 @@ impl dr::CryptoProvider for SignalCryptoProvider {
         let prk = Hkdf::<Sha256>::extract(salt, ikm);
         let info = &b"WhisperRatchet"[..];
         let mut okm = [0; 64];
-        prk.expand(&info, &mut okm).unwrap();
+        prk.expand(info, &mut okm).unwrap();
         let rk = GenericArray::<u8, U32>::clone_from_slice(&okm[..32]);
         let ck = GenericArray::<u8, U32>::clone_from_slice(&okm[32..]);
         (SymmetricKey(rk), SymmetricKey(ck))
@@ -101,7 +101,7 @@ impl dr::CryptoProvider for SignalCryptoProvider {
         mac.input(ad);
         mac.input(&ct);
         let tag = mac.result().code();
-        ct.extend((&tag[..8]).into_iter());
+        ct.extend((tag[..8]).iter());
 
         okm.clear();
         ct
@@ -122,7 +122,7 @@ impl dr::CryptoProvider for SignalCryptoProvider {
         mac.input(ad);
         mac.input(&ct[..ct_len]);
         let tag = mac.result().code();
-        if bool::from(!(&tag.as_ref()[..8]).ct_eq(&ct[ct_len..])) {
+        if bool::from(!(tag.as_ref()[..8]).ct_eq(&ct[ct_len..])) {
             okm.clear();
             return Err(dr::DecryptError::DecryptFailure);
         }
@@ -180,7 +180,7 @@ impl TryFrom<PublicKey> for [u8; 32] {
     type Error = Infallible;
 
     fn try_from(pk: PublicKey) -> Result<Self, Self::Error> {
-        pk.0.as_bytes().clone().try_into()
+        Ok(*pk.0.as_bytes())
     }
 }
 
@@ -237,7 +237,7 @@ impl TryFrom<KeyPair> for [u8; 32] {
     type Error = Infallible;
 
     fn try_from(kp: KeyPair) -> Result<Self, Self::Error> {
-        kp.private.to_bytes().try_into()
+        Ok(kp.private.to_bytes())
     }
 }
 
