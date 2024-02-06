@@ -1,10 +1,15 @@
 [package]
-name = "cbc-aes256-pkcs7-compact"
+name = "double-ratchet-signal-cbc-aes256-pkcs7-compact"
 version = "0.1.1"
 edition = "2021"
 authors = ["myl7 <myl@myl.moe>"]
+description = "See the crate double-ratchet-signal"
 license = "BSD-3-Clause"
-repository = "https://github.com/myl7/double-ratchet-signal"
+homepage = "https://github.com/myl7/double-ratchet-signal"
+documentation = "https://github.com/myl7/double-ratchet-signal#readme"
+repository = "https://github.com/myl7/double-ratchet-signal.git"
+keywords = ["crypto"]
+categories = ["cryptography", "no-std"]
 
 [features]
 default = ["std"]

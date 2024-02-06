@@ -10,6 +10,7 @@
 // #![warn(missing_docs)]
 
 extern crate alloc;
+extern crate double_ratchet_signal_cbc_aes256_pkcs7_compact as cbc_aes256_pkcs7_compact;
 #[cfg(feature = "std")]
 extern crate std;
 
